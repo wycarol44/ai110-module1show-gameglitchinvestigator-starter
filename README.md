@@ -11,6 +11,7 @@ It wrote the code, ran away, and now the game is unplayable.
 
 ## 🛠️ Setup
 
+0. `python3 -m venv venv` and `source venv/bin/activate`
 1. Install dependencies: `pip install -r requirements.txt`
 2. Run the broken app: `python -m streamlit run app.py`
 
