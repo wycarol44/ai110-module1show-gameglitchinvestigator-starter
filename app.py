@@ -40,6 +40,7 @@ difficulty = st.sidebar.selectbox(
     "Difficulty",
     ["Easy", "Normal", "Hard"],
     index=1,
+    key="difficulty_select",
 )
 
 attempt_limit_map = {
@@ -47,9 +48,21 @@ attempt_limit_map = {
     "Normal": 6,
     "Hard": 5,
 }
-attempt_limit = attempt_limit_map[difficulty]
 
 low, high = get_range_for_difficulty(difficulty)
+attempt_limit = attempt_limit_map[difficulty]
+
+if "last_difficulty" in st.session_state and st.session_state.last_difficulty != difficulty:
+    st.session_state.attempts = 0
+    st.session_state.score = 0
+    st.session_state.status = "playing"
+    st.session_state.history = []
+    st.session_state.secret = random.randint(low, high)
+    st.session_state.last_difficulty = difficulty
+    st.rerun()
+
+if "last_difficulty" not in st.session_state:
+    st.session_state.last_difficulty = difficulty
 
 st.sidebar.caption(f"Range: {low} to {high}")
 st.sidebar.caption(f"Attempts allowed: {attempt_limit}")
