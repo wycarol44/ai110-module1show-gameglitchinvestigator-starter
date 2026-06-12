@@ -1,5 +1,6 @@
 import random
 import streamlit as st
+from logic_utils import check_guess
 
 def get_range_for_difficulty(difficulty: str):
     if difficulty == "Easy":
@@ -27,18 +28,6 @@ def parse_guess(raw: str):
         return False, None, "That is not a number."
 
     return True, value, None
-
-
-def check_guess(guess, secret):
-    if guess == secret:
-        return "Win", "🎉 Correct!"
-
-    try:
-        if guess > secret:
-            return "Too High", "📈 Go LOWER!"
-        else:
-            return "Too Low", "📉 Go HIGHER!"
-    except TypeError:
         g = str(guess)
         if g == secret:
             return "Win", "🎉 Correct!"
@@ -104,6 +93,9 @@ if "status" not in st.session_state:
 if "history" not in st.session_state:
     st.session_state.history = []
 
+if "show_hint" not in st.session_state:
+    st.session_state.show_hint = True
+
 st.subheader("Make a guess")
 
 st.info(
@@ -129,12 +121,12 @@ with col1:
 with col2:
     new_game = st.button("New Game 🔁")
 with col3:
-    show_hint = st.checkbox("Show hint", value=st.session_state.get("show_hint", True))
+    st.checkbox("Show hint", key="show_hint", value=st.session_state.show_hint)
 
 if new_game:
     st.session_state.attempts = 0
     st.session_state.secret = random.randint(1, 100)
-    st.session_state.show_hint = False
+    st.session_state.status = "playing"
     st.success("New game started.")
     st.rerun()
 
@@ -163,7 +155,7 @@ if submit:
 
         outcome, message = check_guess(guess_int, secret)
 
-        if show_hint:
+        if st.session_state.show_hint:
             st.warning(message)
 
         st.session_state.score = update_score(
