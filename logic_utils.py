@@ -62,4 +62,12 @@ def check_guess(guess, secret):
 
 def update_score(current_score: int, outcome: str, attempt_number: int):
     """Update score based on outcome and attempt number."""
-    raise NotImplementedError("Refactor this function from app.py into logic_utils.py")
+    if outcome == "Win":
+        points = 100 - 10 * (attempt_number + 1)
+        points = max(points, 10)
+        return current_score + points
+
+    if outcome in ["Too High", "Too Low"]:
+        return max(0, current_score - 5)
+
+    return current_score

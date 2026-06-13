@@ -1,18 +1,6 @@
 import random
 import streamlit as st
-from logic_utils import check_guess, parse_guess, get_range_for_difficulty
-
-
-def update_score(current_score: int, outcome: str, attempt_number: int):
-    if outcome == "Win":
-        points = 100 - 10 * (attempt_number + 1)
-        points = max(points, 10)
-        return current_score + points
-
-    if outcome in ["Too High", "Too Low"]:
-        return max(0, current_score - 5)
-
-    return current_score
+from logic_utils import check_guess, parse_guess, get_range_for_difficulty, update_score
 
 st.set_page_config(page_title="Glitchy Guesser", page_icon="🎮")
 
