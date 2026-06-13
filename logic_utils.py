@@ -15,21 +15,31 @@ def parse_guess(raw: str):
 
     Returns: (ok: bool, guess_int: int | None, error_message: str | None)
     """
+    import math
+
     if raw is None:
         return False, None, "Enter a guess."
 
-    if raw == "":
-        return False, None, "Enter a guess."
-
-    try:
-        if "." in raw:
-            value = int(float(raw))
-        else:
-            value = int(raw)
-    except Exception:
+    if isinstance(raw, bool):
         return False, None, "That is not a number."
 
-    return True, value, None
+    if isinstance(raw, str):
+        text = raw.strip()
+        if text == "":
+            return False, None, "Enter a guess."
+        candidate = text
+    else:
+        candidate = str(raw)
+
+    try:
+        value = float(candidate)
+    except (TypeError, ValueError):
+        return False, None, "That is not a number."
+
+    if not math.isfinite(value):
+        return False, None, "That is not a number."
+
+    return True, int(value), None
 
 
 def check_guess(guess, secret):
