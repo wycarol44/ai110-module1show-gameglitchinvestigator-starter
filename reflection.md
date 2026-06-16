@@ -6,25 +6,24 @@ Answer each question in 3 to 5 sentences. Be specific and honest about what actu
 
 ### What did the game look like the first time you ran it?
 
-When I first launched the game, some components appeared immediately, while other components loaded several seconds later.
+When I first launched the game, the main issue was not just visual timing but inconsistent game rules: the chosen difficulty did not always produce the expected range, the displayed attempts-left value could disagree with the real state, and the score/hint logic did not reflect the current rules. Ying Wang’s commits on the project helped clarify these behaviors by updating the app flow and logic utilities in a way that matched the intended difficulty system.
 
 ### List at least two concrete bugs you noticed at the start:
 
-* The difficulty input produced an incorrect output range.
-* The "Attempts Allowed" value displayed on the left sidebar showed 8, but the actual initial attempts value was 7.
-* The hint system was not working correctly and provided incorrect hints.
-* Clicking the "New Game" button did not clear the game history list.
-* After winning the game, the alert message remained visible even after clicking the "New Game" button.
-* Running `python -m pytest tests/` failed.
+* Difficulty selection did not consistently update the game range and attempt limit.
+* The sidebar and main page showed mismatched attempt counts, which made the game feel broken.
+* Hint text and score feedback were based on older logic and needed to be aligned with the current rules.
+* The new-game flow did not fully reset history and score in every case.
+* Input handling and scoring needed extra validation and tests to cover edge cases.
 
 ### Bug Reproduction Log
 
-| Input                                     | Expected Behavior                                     | Actual Behavior                                                 | Console Output / Error |
-| ----------------------------------------- | ----------------------------------------------------- | --------------------------------------------------------------- | ---------------------- |
-| Start a new game with difficulty selected | The game should generate the correct difficulty range | The generated range did not match the selected difficulty       | N/A                    |
-| Check the Attempts Allowed display        | Sidebar and internal attempt count should match       | Sidebar showed 8 attempts, but game initialized with 7 attempts | N/A                    |
-| Click the Hint button                     | A valid hint should be displayed                      | The hint was incorrect or unrelated                             | N/A                    |
-| Click New Game after winning              | The game should reset all states and clear messages   | Win alert and history remained visible                          | N/A                    |
+| Input                                     | Expected Behavior                                                   | Actual Behavior                                                        | Console Output / Error |
+| ----------------------------------------- | ------------------------------------------------------------------- | ---------------------------------------------------------------------- | ---------------------- |
+| Change difficulty from Normal to Hard     | The game should update the allowed range and attempt limit immediately | The range and attempt limit did not always reflect the selected difficulty | N/A                    |
+| Check the main page attempts counter      | The displayed “Attempts left” should match the real game state       | The sidebar and main page could show different values                 | N/A                    |
+| Submit a guess and view the hint/score   | Hint text and score feedback should follow the current game rules    | Hint and score behavior were inconsistent with the updated logic      | N/A                    |
+| Click New Game after a few guesses        | History, score, and status should reset for a fresh game             | Previous history or score could remain visible after reset           | N/A                    |
 
 ---
 
@@ -32,7 +31,7 @@ When I first launched the game, some components appeared immediately, while othe
 
 ### Which AI tools did you use on this project?
 
-I used ChatGPT, Codex, and GitHub Copilot to help analyze bugs, understand code behavior, and improve my debugging process.
+I used ChatGPT, Codex, and GitHub Copilot to analyze the existing logic, compare the behavior of the app and utility functions, and verify the fixes.
 
 ### Give one example of an AI suggestion that was correct.
 
@@ -46,11 +45,9 @@ Some AI suggestions did not fully match the actual code behavior. I verified the
 
 ## 3. Debugging and testing your fixes
 
-I decided a bug was fixed by manually testing the user flow and running automated tests. I checked whether the original issue could still be reproduced after each change.
+I decided a bug was fixed by manually testing the user flow and then running the automated tests that cover the updated logic. The recent work on `parse_guess`, `update_score`, and difficulty-related behavior was especially important because it added tests for edge cases and scoring outcomes.
 
-One test I ran was `python -m pytest tests/`. This helped identify whether my changes affected existing functionality and whether the code behavior matched the expected test cases.
-
-AI helped me understand some tests by explaining what each test was checking and suggesting possible causes when a test failed.
+One test I ran was `python -m pytest tests/`, and the result confirmed that the updated logic still behaved as expected after the fixes. The added tests for parsing and scoring helped verify the rules that Carol Wang’s commits were improving.
 
 ---
 
@@ -66,7 +63,7 @@ Session state allows Streamlit applications to store information across reruns. 
 
 ### What is one habit or strategy from this project that you want to reuse?
 
-I want to continue taking notes, listing bugs clearly, fixing issues one at a time, and testing after each change. I also want to make smaller Git commits for each task instead of grouping too many changes together. My preferred workflow is to first get an overview of the problem, investigate details, make fixes, and then review the whole system again with integration testing.
+I want to continue taking notes, listing bugs clearly, fixing issues one at a time, and testing after each change. I also want to use commit history more actively as a debugging reference, since Carol Wang’s updates showed how the app logic evolved across difficulty, hint, score, and input-handling changes. My preferred workflow is to review the current behavior, compare it to recent commits, make focused fixes, and then verify the result with tests.
 
 ### What is one thing you would do differently next time when working with AI on a coding task?
 
