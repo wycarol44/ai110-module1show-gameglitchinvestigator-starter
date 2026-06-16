@@ -1,6 +1,7 @@
 import random
 import streamlit as st
 from logic_utils import check_guess, parse_guess, get_range_for_difficulty, update_score
+from score_tracker import load_high_scores, save_score, is_high_score
 
 st.set_page_config(page_title="Glitchy Guesser", page_icon="🎮")
 
@@ -15,6 +16,15 @@ difficulty = st.sidebar.selectbox(
     index=1,
     key="difficulty_select",
 )
+
+# Display high scores for current difficulty
+st.sidebar.header("🏆 Top Scores")
+top_scores = load_high_scores(difficulty=difficulty, limit=5)
+if top_scores:
+    for rank, (score, diff, timestamp) in enumerate(top_scores, 1):
+        st.sidebar.metric(f"#{rank}", f"{score} pts", f"{diff} • {timestamp}")
+else:
+    st.sidebar.caption("No scores yet for this difficulty!")
 
 attempt_limit_map = {
     "Easy": 8,
@@ -72,10 +82,9 @@ with st.expander("Developer Debug Info"):
     st.write("Difficulty:", difficulty)
     st.write("History:", st.session_state.history)
 
-raw_guess = st.text_input(
-    "Enter your guess:",
-    key=f"guess_input_{difficulty}"
-)
+guess_key = f"guess_input_{difficulty}"
+raw_guess = st.text_input("Enter your guess:", key=guess_key)
+current_guess = st.session_state.get(guess_key, raw_guess)
 
 col1, col2, col3 = st.columns(3)
 with col1:
@@ -102,15 +111,15 @@ if st.session_state.status != "playing":
     st.stop()
 
 if submit:
+    submitted_guess = st.session_state.get(guess_key, raw_guess)
+    st.session_state.history = list(st.session_state.history) + [submitted_guess]
     st.session_state.attempts += 1
 
-    ok, guess_int, err = parse_guess(raw_guess)
+    ok, guess_int, err = parse_guess(submitted_guess)
 
     if not ok:
-        st.session_state.history.append(raw_guess)
         st.error(err)
     else:
-        st.session_state.history.append(guess_int)
 
         if st.session_state.attempts % 2 == 0:
             secret = str(st.session_state.secret)
@@ -131,10 +140,19 @@ if submit:
         if outcome == "Win":
             st.balloons()
             st.session_state.status = "won"
-            st.success(
-                f"You won! The secret was {st.session_state.secret}. "
-                f"Final score: {st.session_state.score}"
-            )
+            
+            # Save score and check if it's a high score
+            save_score(st.session_state.score, difficulty)
+            if is_high_score(st.session_state.score, difficulty):
+                st.success(
+                    f"🎉 You won! The secret was {st.session_state.secret}. "
+                    f"Final score: {st.session_state.score} ⭐ NEW HIGH SCORE!"
+                )
+            else:
+                st.success(
+                    f"You won! The secret was {st.session_state.secret}. "
+                    f"Final score: {st.session_state.score}"
+                )
         else:
             if st.session_state.attempts >= attempt_limit:
                 st.session_state.status = "lost"
@@ -143,6 +161,12 @@ if submit:
                     f"The secret was {st.session_state.secret}. "
                     f"Score: {st.session_state.score}"
                 )
+
+st.caption("Guess history")
+if st.session_state.history:
+    st.write(st.session_state.history)
+else:
+    st.write("No guesses yet.")
 
 st.divider()
 st.caption("Built by an AI that claims this code is production-ready.")
