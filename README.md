@@ -26,19 +26,37 @@ It wrote the code, ran away, and now the game is unplayable.
 
 ## 📝 Document Your Experience
 
-- [ ] Describe the game's purpose.
-- [ ] Detail which bugs you found.
-- [ ] Explain what fixes you applied.
+### Purpose
+
+This is a simple Number Guessing Game built with Streamlit. Players choose a difficulty (sets the number range and attempt limit), submit numeric guesses, receive higher/lower hints, and earn points based on accuracy and remaining attempts.
+
+### Bugs Found
+
+- Difficulty selection did not always update the allowed range or attempt limit.
+- Sidebar and main page could display mismatched "Attempts left" values.
+- Hints (Higher/Lower) were sometimes generated from outdated logic and could be incorrect.
+- New-game flow did not always clear history and score.
+- Input parsing and scoring needed more validation and edge-case tests.
+
+### Fixes Applied
+
+- Persisted game state using `st.session_state` for the secret number, attempts, history, and score.
+- Consolidated hint/score logic into `logic_utils.py` and corrected hint calculation so it always reflects the current secret number.
+- Ensured New Game resets history, attempts, and score consistently.
+- Added input validation and updated/added unit tests for parsing and scoring behavior.
 
 ## 📸 Demo Walkthrough
 
-Describe your fixed game in numbered steps so a reader can follow along without watching a video:
+1. Start the app:
 
-1. <!-- Describe this step -->
-2. <!-- Describe this step -->
-3. <!-- Describe this step -->
-4. <!-- Describe this step -->
-5. <!-- Add more steps as needed -->
+```bash
+python -m streamlit run app.py
+```
+
+2. Open the "Developer Debug Info" tab to reveal the current secret number for debugging.
+3. Select a difficulty (Easy / Normal / Hard). The displayed range and attempt limit update to match the selection.
+4. Enter a numeric guess and click "Submit". The app shows a correct hint ("Higher" or "Lower"), decrements attempts, updates history, and adjusts score based on remaining attempts.
+5. Click "New Game" to reset the secret number, attempts, history, and score for a fresh round.
 
 **Screenshot** *(optional)*: <!-- Insert a screenshot of your fixed, winning game here -->
 

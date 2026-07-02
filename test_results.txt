@@ -1,0 +1,12 @@
+============================= test session starts ==============================
+platform darwin -- Python 3.14.5, pytest-9.0.3, pluggy-1.6.0
+rootdir: /Users/wangying/Documents/git/codepath/AI110/unit1/ai110-module1show-gameglitchinvestigator-starter
+plugins: anyio-4.13.0
+collected 20 items
+
+tests/test_game_logic.py ...                                             [ 15%]
+tests/test_get_range_for_difficulty.py .....                             [ 40%]
+tests/test_parse_guess.py .........                                      [ 85%]
+tests/test_update_score.py ...                                           [100%]
+
+============================== 20 passed in 0.03s ==============================
